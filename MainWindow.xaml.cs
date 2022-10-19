@@ -55,16 +55,12 @@ namespace FBE_MonatsCheck
             cnn.Open();
 
             SqlCommand amountCommand = new SqlCommand("" +
-                @"  SELECT anzahl = count (distinct doc.lposnr), st.ErstUs
-                    FROM temp_Doc_DMS_CRM doc
-                    inner join XXAAuf auf		ON auf.LPosNr	= doc.LPosNr
-                    inner join XXASLStatu st	ON st.aufnr	= auf.AufNr
-                    where
+                @"  SELECT ...
                     -- für Zeitraum
                     st.Erstdat >= '" + start.ToString("dd.MM.yyyy") + @"' and st.Erstdat <= '" + end.ToString("dd.MM.yyyy") + @"'
                     
-                    and doc.LPosNr = auf.LPosNr and doc.erstes_doc = st.Erstdat and st.ErstUs not in " + blacklist +
-                    " and (st.statusnr = 1000 or st.statusnr = 1040 or st.statusnr = 1060 or st.statusnr = 1100 or st.statusnr = 1160)" +
+                    ... st.ErstUs not in " + blacklist +
+                    "..." +
 
                     "GROUP BY st.ErstUs ORDER BY anzahl", cnn);
             amountCommand.CommandTimeout = 6000;
@@ -82,18 +78,13 @@ namespace FBE_MonatsCheck
             cnn.Open();
 
             SqlCommand singleCommand = new SqlCommand("" +
-                @"  SELECT  st.ErstUs, erst.LPosNr, erst.erstes_doc, st.statusnr
-                    FROM temp_Doc_DMS_CRM erst
-                    inner join XXAAuf auf			ON auf.LPosNr	= erst.LPosNr
-                    inner join XXASLStatu st		ON st.aufnr	= auf.AufNr
-                    where
-                    
+                @"  SELECT  ...
                     --Monatlich
                     st.Erstdat >= '" + start.ToString("dd.MM.yyyy") + @"' and st.Erstdat <= '" + end.ToString("dd.MM.yyyy") + @"'
                      
-                     and erst.LPosNr = auf.LPosNr and erst.erstes_doc = st.Erstdat and st.ErstUs not in " + blacklist +
-                     " and (st.statusnr = 1000 or st.statusnr = 1040 or st.statusnr = 1060 or st.statusnr = 1100 or st.statusnr = 1160)" +
-                     "GROUP BY st.erstUs, erst.LPosNr, erst.erstes_doc, st.StatusNr order by st.erstUs, erstes_doc", cnn);
+                     ... and st.ErstUs not in " + blacklist +
+                     " ..." +
+                     "...", cnn);
             singleCommand.CommandTimeout =  6000;
             SqlDataReader readSingle = singleCommand.ExecuteReader();
             while (readSingle.Read())
